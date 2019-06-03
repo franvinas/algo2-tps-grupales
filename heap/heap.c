@@ -27,7 +27,7 @@ void swap(void** vector, size_t pos1, size_t pos2) {
 
 void upheap(void** vector, size_t pos, cmp_func_t cmp) {
   if(pos == 0) return;
-  size_t padre = (pos - 1) / 2;
+  size_t padre = (pos - 1) / 2;//podrian tener una funcion que les de el padre, el hijo_izq y el hijo_der
   if(cmp(vector[padre], vector[pos]) < 0) {
     swap(vector, padre, pos);
     upheap(vector, padre, cmp);
@@ -64,13 +64,13 @@ bool heap_redimensionar(heap_t* heap, size_t tam_nuevo) {
   return true;
 }
 
-void heapify(void** vector, size_t tam, size_t pos, cmp_func_t cmp) {
+void heapify(void** vector, size_t tam, size_t pos, cmp_func_t cmp) { //al hacerlo recursivo es 0(n) en espacio por los llamado que se apilan en el stack 
   if(pos == 0) return;
   downheap(vector, tam, pos - 1, cmp);
-  heapify(vector, tam, pos -1, cmp);
+  heapify(vector, tam, pos -1, cmp); 
 }
 
-void heap_sort_rec(void* elementos, size_t tam, cmp_func_t cmp) {
+void heap_sort_rec(void* elementos, size_t tam, cmp_func_t cmp) { //lo mismo que en heapify, no esta mal hacerlo recursivo pero iterativo ocupa menos espacio
   if(tam <= 1) return;
   swap(elementos, 0, tam -1);
   downheap(elementos, tam - 1, 0, cmp);
@@ -82,7 +82,7 @@ void heap_sort_rec(void* elementos, size_t tam, cmp_func_t cmp) {
 ************************************************************************/
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-  heapify(elementos, cant, cant, cmp);
+  heapify(elementos, cant, cant, cmp);//las primera mitad del heap son las hojas y no tiene sentido hacerle downheap
   heap_sort_rec(elementos, cant, cmp);
 }
 
@@ -114,7 +114,7 @@ heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
 
   for(size_t i = 0; i < n; i++) {
     heap->vector[i] = arreglo[i];
-    heap->cantidad ++;
+    heap->cantidad ++;//ya saben que la cantidad va a ser n
   }
 
   heapify(heap->vector, heap->cantidad, heap->cantidad, cmp);
@@ -164,7 +164,7 @@ void *heap_desencolar(heap_t *heap) {
   swap(heap->vector, 0, heap->cantidad);
   downheap(heap->vector, heap->cantidad, 0, heap->cmp);
 
-  if(heap->capacidad > heap->cantidad * FACTOR_REDIMENSION * 2)
+  if(heap->capacidad > heap->cantidad * FACTOR_REDIMENSION * 2) //recuerden que no tienen que redimensionar a menos que el tamaño inicial
     heap_redimensionar(heap, heap->capacidad / FACTOR_REDIMENSION);
 
   return elem_a_eliminar;

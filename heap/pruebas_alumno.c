@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#define CONSTANTE_PRUEBA_VOLUMEN 50
+#define CONSTANTE_PRUEBA_VOLUMEN 50 //50 no es volumen suficiente
 
 
 
@@ -16,6 +16,8 @@
 	 const int* y = b;
 	 return *x - *y;
  }
+
+//borren las pruebas comentadas que no usen
 
 // bool cumple_condicion_heap(void** vector, size_t tam, size_t pos) {
 // 	bool condicion_padre;
@@ -138,7 +140,7 @@ void PruebaheapVariosElementos(){
 
 }
 
-void PruebaVolumen(){
+void PruebaVolumen(){//estaria bueno recibir el volumen por parametro para poder probar varios volumenes
     heap_t* heap = heap_crear(cmp);
     print_test("Se creo el heap", heap != NULL);
 
@@ -147,7 +149,7 @@ void PruebaVolumen(){
 
     for (int i = 0; i < CONSTANTE_PRUEBA_VOLUMEN; ++i) {
         vector_prueba_volumen[i] = i;
-        heap_encolar(heap,&vector_prueba_volumen[i]);
+        heap_encolar(heap,&vector_prueba_volumen[i]);//no es interesante encolar en orden los elementos
     }
 
 
@@ -184,7 +186,7 @@ void pruebas_heap_sort() {
 		heap_sort( (void**) vector, 6, cmp);
 
 
-		print_test("La funcion heap_sort ordena el vector correctamente", esta_ordenado(vector, 6));
+		print_test("La funcion heap_sort ordena el vector correctamente", esta_ordenado(vector, 6));//estaria bueno alguna prueba de heapsort de volumen
 
 }
 
@@ -205,3 +207,4 @@ void pruebas_heap_alumno() {
 	printf("\nINICIO PRUEBAS DE HEAP_SORT\n");
 	pruebas_heap_sort();
 }
+//faltan pruebas con funcion de destruccion propia
