@@ -17,42 +17,6 @@
 	 return *x - *y;
  }
 
-//borren las pruebas comentadas que no usen
-
-// bool cumple_condicion_heap(void** vector, size_t tam, size_t pos) {
-// 	bool condicion_padre;
-// 	bool condicion_hijo_izq;
-// 	bool condicion_hijo_der;
-// 	size_t hijo_izq = 2 * pos + 1;
-// 	size_t hijo_der = 2 * pos + 2;
-// 	if(pos == 0)
-// 		condicion_padre = true;
-// 	else {
-// 		size_t padre = (pos - 1) / 2;
-// 		condicion_padre = *(int*) vector[padre] > *(int*) vector[pos];
-// 	}
-//
-// 	if(hijo_izq >= tam) {
-// 		condicion_hijo_izq = true;
-// 		condicion_hijo_der = true;
-// 	} else {
-// 		condicion_hijo_izq = *(int*) vector[pos] > *(int*) vector[hijo_izq];
-// 		if(hijo_der >= tam)
-// 			condicion_hijo_der = true;
-// 		else
-// 			condicion_hijo_der = *(int*) vector[pos] > *(int*) vector[hijo_der];
-// 	}
-// 	return condicion_padre && condicion_hijo_der && condicion_hijo_izq;
-//
-// }
-//
-// bool es_heap(void** vector, size_t n) {
-// 	for(size_t i = 0; i < n; i++) {
-// 		if(!cumple_condicion_heap(vector, n, i)) return false;
-// 	}
-// 	return true;
-// }
-
 bool esta_ordenado(int** vector, size_t tam) {
   for(size_t i = 1; i < tam; i++) {
     if(*vector[i] < *vector[i - 1]) return false;
@@ -60,12 +24,12 @@ bool esta_ordenado(int** vector, size_t tam) {
   return true;
 }
 
-// void imprimir_vector(int** vector, size_t tam) {
-//   for(size_t i = 0; i < tam; i++) {
-//     printf("%i ", *vector[i]);
-//   }
-//   printf("\n");
-// }
+void imprimir_vector(int** vector, size_t tam) {
+  for(size_t i = 0; i < tam; i++) {
+    printf("%i ", *vector[i]);
+  }
+  printf("\n");
+}
 
 /* ******************************************************************
  *                   PRUEBAS UNITARIAS ALUMNO
@@ -183,11 +147,13 @@ void pruebas_heap_sort() {
 		vector[3] = &valor4;
 		vector[4] = &valor5;
 		vector[5] = &valor6;
+    printf("Vector original: ");
+    imprimir_vector(vector, 6);
 		heap_sort( (void**) vector, 6, cmp);
-
+    printf("Vector ordenado: ");
+    imprimir_vector(vector, 6);
 
 		print_test("La funcion heap_sort ordena el vector correctamente", esta_ordenado(vector, 6));//estaria bueno alguna prueba de heapsort de volumen
-
 }
 
 void pruebas_heap_alumno() {

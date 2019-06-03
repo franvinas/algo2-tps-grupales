@@ -22,12 +22,23 @@ void swap(void** vector, size_t pos1, size_t pos2) {
   void* aux = vector[pos1];
   vector[pos1] = vector[pos2];
   vector[pos2] = aux;
+}
 
+size_t obtener_padre(size_t pos) {
+  return (pos - 1) / 2;
+}
+
+size_t obtener_hijo_izq(size_t pos) {
+  return 2 * pos + 1;
+}
+
+size_t obtener_hijo_der(size_t pos) {
+  return 2 * pos + 2;
 }
 
 void upheap(void** vector, size_t pos, cmp_func_t cmp) {
   if(pos == 0) return;
-  size_t padre = (pos - 1) / 2;//podrian tener una funcion que les de el padre, el hijo_izq y el hijo_der
+  size_t padre = obtener_padre(pos);
   if(cmp(vector[padre], vector[pos]) < 0) {
     swap(vector, padre, pos);
     upheap(vector, padre, cmp);
@@ -40,8 +51,8 @@ size_t buscar_hijo_max(void** vector, size_t hijo1, size_t hijo2, cmp_func_t cmp
 }
 
 void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp) {
-  size_t hijo_izq = 2 * pos + 1;
-  size_t hijo_der = 2 * pos + 2;
+  size_t hijo_izq = obtener_hijo_izq(pos);
+  size_t hijo_der = obtener_hijo_der(pos);
   size_t pos_hijo_max;
 
   if(hijo_izq >= tam) return;
@@ -64,17 +75,10 @@ bool heap_redimensionar(heap_t* heap, size_t tam_nuevo) {
   return true;
 }
 
-void heapify(void** vector, size_t tam, size_t pos, cmp_func_t cmp) { //al hacerlo recursivo es 0(n) en espacio por los llamado que se apilan en el stack 
-  if(pos == 0) return;
-  downheap(vector, tam, pos - 1, cmp);
-  heapify(vector, tam, pos -1, cmp); 
-}
-
-void heap_sort_rec(void* elementos, size_t tam, cmp_func_t cmp) { //lo mismo que en heapify, no esta mal hacerlo recursivo pero iterativo ocupa menos espacio
-  if(tam <= 1) return;
-  swap(elementos, 0, tam -1);
-  downheap(elementos, tam - 1, 0, cmp);
-  heap_sort_rec(elementos, tam - 1, cmp);
+void heapify(void** vector, size_t tam, size_t pos, cmp_func_t cmp) {
+  for(size_t i = 0; i <= pos; i++) {
+    downheap(vector, tam, pos - i, cmp);
+  }
 }
 
 /***********************************************************************
@@ -82,8 +86,13 @@ void heap_sort_rec(void* elementos, size_t tam, cmp_func_t cmp) { //lo mismo que
 ************************************************************************/
 
 void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
-  heapify(elementos, cant, cant, cmp);//las primera mitad del heap son las hojas y no tiene sentido hacerle downheap
-  heap_sort_rec(elementos, cant, cmp);
+  heapify(elementos, cant, (cant - 1) / 2, cmp);
+  size_t tam = cant;
+  while (tam > 1) {
+    swap(elementos, 0, tam -1);
+    downheap(elementos, tam - 1, 0, cmp);
+    tam--;
+  }
 }
 
 heap_t *heap_crear(cmp_func_t cmp) {
