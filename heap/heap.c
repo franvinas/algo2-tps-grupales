@@ -68,9 +68,9 @@ void downheap(void** vector, size_t tam, size_t pos, cmp_func_t cmp) {
 }
 
 bool heap_redimensionar(heap_t* heap, size_t tam_nuevo) {
+  if(tam_nuevo < TAM_INICIAL) return true;
   void** arreglo_nuevo = realloc(heap->vector, tam_nuevo * sizeof(void*));
   if(!arreglo_nuevo) return false;
-  if(tam_nuevo < TAM_INICIAL) return true;
   heap->vector = arreglo_nuevo;
   heap->capacidad = tam_nuevo;
   return true;

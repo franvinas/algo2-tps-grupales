@@ -54,10 +54,10 @@ void PruebaheapUnElemento(){
 	print_test("heap ya no esta vacia", !heap_esta_vacio(heap));
 	print_test("Tope de el heap es lo apuntado por pvalor" , heap_ver_max(heap) == pvalor);
 	print_test("Desencolo un elemento" , heap_desencolar(heap));
-	print_test("heap vacia", heap_esta_vacio(heap));
-	print_test("Tope de el heap es NULL" , heap_ver_max(heap) == NULL);
+	print_test("Heap vacio", heap_esta_vacio(heap));
+	print_test("Tope del heap es NULL" , heap_ver_max(heap) == NULL);
 	heap_destruir(heap, NULL);
-	print_test("el heap fue destruida",true);
+	print_test("El heap fue destruido",true);
 }
 
 
