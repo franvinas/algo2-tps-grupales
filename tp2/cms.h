@@ -11,7 +11,7 @@ cms_t* cms_crear(size_t tam);
  * Pre: La estructura cms fue inicializada
  * Post: Se incremento el valor
  */
-bool cms_guardar(cms_t* cms, const char* clave);
+void cms_guardar(cms_t* cms, const char* clave);
 
 /* Devuelve la cantidad de apariciones de la clave (aproximada)
  * Pre: La estructura cms fue inicializada
