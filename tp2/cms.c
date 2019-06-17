@@ -1,12 +1,9 @@
 #include "cms.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 
 struct cms {
   size_t* tabla;
   size_t capacidad;
-}
+};
 
 // Djb2 hash function (Funcion de Hash sacada de internet)
 size_t funcion_hash(const char *str, size_t capacidad) {

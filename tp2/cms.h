@@ -1,6 +1,10 @@
 #ifndef _CMS_H
 #define _CMS_H
 
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
 typedef struct cms cms_t;
 
 /* Crea el cms
