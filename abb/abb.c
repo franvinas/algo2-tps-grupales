@@ -44,17 +44,23 @@ abb_nodo_t* abb_nodo_buscar_padre(const abb_t* abb, abb_nodo_t* nodo_actual, con
 
 }
 
-abb_nodo_t* abb_nodo_buscar(const abb_t* arbol, abb_nodo_t* nodo_actual, const char* clave){
 
-    if(!nodo_actual) return NULL;
+abb_nodo_t* abb_buscar_hijo(const abb_t* arbol, abb_nodo_t* padre, const char* clave){
 
-    abb_nodo_t* padre = abb_nodo_buscar_padre(arbol, arbol->raiz, clave);
     if(!padre) {
-      return arbol->cmp(nodo_actual->clave, clave) == 0 ? nodo_actual : NULL;
+      return arbol->raiz;
     }
     if(arbol->cmp(padre->clave, clave) > 0)
         return padre->izq;
     return padre->der;
+}
+
+abb_nodo_t* abb_nodo_buscar(const abb_t* arbol, abb_nodo_t* nodo_actual, const char* clave){
+
+  if(!nodo_actual) return NULL;
+
+  abb_nodo_t* padre = abb_nodo_buscar_padre(arbol, arbol->raiz, clave);
+  return abb_buscar_hijo(arbol, padre, clave);
 }
 
 abb_nodo_t* nodo_crear(const char* clave, void* dato) {
@@ -126,6 +132,14 @@ bool abb_in_order_r(abb_nodo_t* nodo_actual, bool visitar(const char *, void *, 
   return true;
 }
 
+void apilar_todos_izq(abb_nodo_t* nodo_actual, abb_iter_t* iter) {
+    while(nodo_actual)  {
+        pila_apilar(iter->pila, nodo_actual);
+        nodo_actual = nodo_actual->izq;
+    }
+}
+
+
 /******************************************************************************
                                 PRIMITIVAS
 *******************************************************************************/
@@ -145,7 +159,9 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 }
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
-    abb_nodo_t* nodo = abb_nodo_buscar(arbol, arbol->raiz, clave);
+    abb_nodo_t* padre = abb_nodo_buscar_padre(arbol, arbol->raiz, clave);
+    abb_nodo_t* nodo = abb_buscar_hijo(arbol, padre, clave);
+
     if(nodo) {
       if(arbol->destruir_dato)
           arbol->destruir_dato(nodo->dato);
@@ -155,7 +171,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
     nodo = nodo_crear(clave, dato);
     if(!nodo) return false;
 
-    abb_nodo_t* padre = abb_nodo_buscar_padre(arbol, arbol->raiz, clave);//estaria bueno evitar recorrer el arbol dos veces
+
     if(arbol->raiz == NULL || !padre) {
       arbol->raiz = nodo;
       arbol->cant++;
@@ -173,10 +189,9 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato) {
 }
 
 void *abb_borrar(abb_t *arbol, const char *clave){
-    abb_nodo_t* nodo_a_borrar = abb_nodo_buscar(arbol,arbol->raiz,clave);
-    if(!nodo_a_borrar) return NULL; //Por si se manda una clave que no pertenecia
-
     abb_nodo_t* nodo_padre = abb_nodo_buscar_padre(arbol, arbol->raiz, clave);
+    abb_nodo_t* nodo_a_borrar = abb_buscar_hijo(arbol,nodo_padre,clave);
+    if(!nodo_a_borrar) return NULL; //Por si se manda una clave que no pertenecia
 
     arbol->cant--;
 
@@ -243,7 +258,10 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
   abb_in_order_r(arbol->raiz, visitar, extra);
 }
 
-//estaria bueno algun comentario con un separador
+
+/******************************************************************************
+                            PRIMITIVAS DEL ITERADOR
+*******************************************************************************/
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
   abb_iter_t* iter = malloc(sizeof(abb_iter_t));
@@ -256,23 +274,19 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
   }
 
   abb_nodo_t* nodo_actual = arbol->raiz;
-  while(nodo_actual)  { //podria estas encapsulado en una funcion. Fijense que repiten el codigo en avanzar
-    pila_apilar(iter->pila, nodo_actual);
-    nodo_actual = nodo_actual->izq;
-  }
+  apilar_todos_izq(nodo_actual, iter);
 
   return iter;
 }
+
+
 
 bool abb_iter_in_avanzar(abb_iter_t *iter){
   abb_nodo_t* desapilado = pila_desapilar(iter->pila);
   if(!desapilado) return false;
 
   abb_nodo_t* nodo_actual = desapilado->der;
-  while(nodo_actual) {
-    pila_apilar(iter->pila, nodo_actual);
-    nodo_actual = nodo_actual->izq;
-  }
+  apilar_todos_izq(nodo_actual, iter);
   return true;
 }
 
