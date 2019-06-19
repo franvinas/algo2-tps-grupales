@@ -139,6 +139,16 @@ void apilar_todos_izq(abb_nodo_t* nodo_actual, abb_iter_t* iter) {
     }
 }
 
+void abb_destruir_r(abb_t* arbol, abb_nodo_t* nodo_a_borrar){
+    if (nodo_a_borrar->izq)
+        abb_destruir_r(arbol,nodo_a_borrar->izq);
+    if (nodo_a_borrar->der)
+        abb_destruir_r(arbol,nodo_a_borrar->der);
+    void* dato = nodo_borrar(nodo_a_borrar);
+    if (arbol->destruir_dato)
+        arbol->destruir_dato(dato);
+}
+
 
 /******************************************************************************
                                 PRIMITIVAS
@@ -235,17 +245,6 @@ bool abb_pertenece(const abb_t *arbol, const char *clave){
 
 size_t abb_cantidad(abb_t *arbol){
     return arbol->cant;
-}
-
-
-void abb_destruir_r(abb_t* arbol, abb_nodo_t* nodo_a_borrar){
-    if (nodo_a_borrar->izq)
-        abb_destruir_r(arbol,nodo_a_borrar->izq);
-    if (nodo_a_borrar->der)
-        abb_destruir_r(arbol,nodo_a_borrar->der);
-    void* dato = nodo_borrar(nodo_a_borrar);
-    if (arbol->destruir_dato)
-        arbol->destruir_dato(dato);
 }
 
 void abb_destruir(abb_t *arbol) {//haganlo a mano sin iterador (fijense recursivamente como lo pueden hacer)
