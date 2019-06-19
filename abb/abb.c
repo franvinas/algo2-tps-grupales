@@ -237,19 +237,23 @@ size_t abb_cantidad(abb_t *arbol){
     return arbol->cant;
 }
 
-void abb_destruir(abb_t *arbol){//haganlo a mano sin iterador (fijense recursivamente como lo pueden hacer)
-  abb_iter_t* iter = abb_iter_in_crear(arbol);
 
-  while(!abb_iter_in_al_final(iter)) {
+void abb_destruir_r(abb_t* arbol, abb_nodo_t* nodo_a_borrar){
+    if (nodo_a_borrar->izq)
+        abb_destruir_r(arbol,nodo_a_borrar->izq);
+    if (nodo_a_borrar->der)
+        abb_destruir_r(arbol,nodo_a_borrar->der);
+    void* dato = nodo_borrar(nodo_a_borrar);
+    if (arbol->destruir_dato)
+        arbol->destruir_dato(dato);
+}
 
-      const char* clave_actual = abb_iter_in_ver_actual(iter);
-      abb_iter_in_avanzar(iter);
-      if(arbol->destruir_dato != NULL)
-        arbol->destruir_dato(abb_obtener(arbol, clave_actual));
-      abb_borrar(arbol, clave_actual);//esta funcion tambien tiene que recorrer el arbol para buscar la clave
-  }
-  abb_iter_in_destruir(iter);
-  free(arbol);
+void abb_destruir(abb_t *arbol) {//haganlo a mano sin iterador (fijense recursivamente como lo pueden hacer)
+
+    if (arbol->raiz)
+      abb_destruir_r(arbol,arbol->raiz);
+
+    free(arbol);
 }
 
 
