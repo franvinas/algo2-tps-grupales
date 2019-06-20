@@ -14,6 +14,9 @@
 #include <unistd.h>  // For ssize_t in Linux.
 
 
+
+
+
 /* ******************************************************************
  *                        PRUEBAS UNITARIAS
  * *****************************************************************/
@@ -222,14 +225,20 @@ static void prueba_abb_volumen(size_t largo, bool debug)
 
     /* Inserta 'largo' parejas en el abb */
     bool ok = true;
+
+
+    for (int j = 0; j < tope; ++j) {
+        valores[j] = malloc(sizeof(int));
+    }
+
     for (unsigned i = 0; i < largo; i++) {
-        valores[i] = malloc(sizeof(int));
-        sprintf(claves[i], "%i", rand() % tope);
-        *valores[i] = i;
+        int pos = rand() % tope;
+        sprintf(claves[i], "%i", pos);
+        *valores[pos] = pos;
 
         if(!abb_pertenece(abb, claves[i])) cantidad++;
 
-        ok = abb_guardar(abb, claves[i], valores[i]);
+        ok = abb_guardar(abb, claves[i], valores[pos]);
         if(!ok) break;
     }
 
@@ -240,7 +249,9 @@ static void prueba_abb_volumen(size_t largo, bool debug)
     for (size_t i = 0; i < largo; i++) {
         ok = abb_pertenece(abb, claves[i]);
         if (!ok) break;
-        ok = abb_obtener(abb, claves[i]) == valores[i];
+        const char *clave = claves[i];
+        int pos = atoi(clave);
+        ok = abb_obtener(abb, claves[i]) == valores[pos];
         if (!ok) break;
     }
 
@@ -249,7 +260,10 @@ static void prueba_abb_volumen(size_t largo, bool debug)
 
     /* Verifica que borre y devuelva los valores correctos */
     for (size_t i = 0; i < largo; i++) {
-        ok = abb_borrar(abb, claves[i]) == valores[i];
+        const char *clave = claves[i];
+        int pos = atoi(clave);
+        ok = abb_borrar(abb, claves[i]) == valores[pos];
+        valores[pos] = NULL;
         if (!ok) break;
     }
 
@@ -257,10 +271,15 @@ static void prueba_abb_volumen(size_t largo, bool debug)
     if (debug) print_test("Prueba abb la cantidad de elementos es 0", abb_cantidad(abb) == 0);
 
     /* Destruye el abb y crea uno nuevo que sí libera */
+
+
     abb_destruir(abb);
+
+
+    /*
     abb = abb_crear(strcmp,free);
 
-    /* Inserta 'largo' parejas en el abb */
+
     ok = true;
     for (size_t i = 0; i < largo; i++) {
         ok = abb_guardar(abb, claves[i], valores[i]);
@@ -269,8 +288,10 @@ static void prueba_abb_volumen(size_t largo, bool debug)
 
     free(claves);
 
-    /* Destruye el abb - debería liberar los enteros */
+
     abb_destruir(abb);
+
+    */
 
 }
 
@@ -472,7 +493,7 @@ void pruebas_abb_alumno()
 
     prueba_iterador_interno();
 
-    prueba_abb_volumen(100, true);//100 es volumen muy chico
+    prueba_abb_volumen(200, true);//100 es volumen muy chico
     prueba_abb_iterar();
     prueba_abb_iterar_volumen(100);
     prueba_abb_volumen(100, false);
