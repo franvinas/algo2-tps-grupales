@@ -262,36 +262,24 @@ static void prueba_abb_volumen(size_t largo, bool debug)
     for (size_t i = 0; i < largo; i++) {
         const char *clave = claves[i];
         int pos = atoi(clave);
-        ok = abb_borrar(abb, claves[i]) == valores[pos];
-        valores[pos] = NULL;
+        void* dato = abb_borrar(abb, claves[i]);
+        if (dato != NULL)
+            ok = dato == valores[pos];
         if (!ok) break;
     }
+
 
     if (debug) print_test("Prueba abb borrar muchos elementos", ok);
     if (debug) print_test("Prueba abb la cantidad de elementos es 0", abb_cantidad(abb) == 0);
 
-    /* Destruye el abb y crea uno nuevo que sí libera */
 
 
-    abb_destruir(abb);
-
-
-    /*
-    abb = abb_crear(strcmp,free);
-
-
-    ok = true;
-    for (size_t i = 0; i < largo; i++) {
-        ok = abb_guardar(abb, claves[i], valores[i]);
-        if (!ok) break;
+    for (int k = 0; k < tope; ++k) {
+            free(valores[k]);
     }
 
     free(claves);
-
-
     abb_destruir(abb);
-
-    */
 
 }
 
@@ -363,13 +351,18 @@ static void prueba_abb_iterar_volumen(size_t largo)
     char (*claves)[largo_clave] = malloc(largo * largo_clave);
 
     size_t valores[largo];
+    int tope = 100;
+    int cantidad = 0;
 
     /* Inserta 'largo' parejas en el abb */
     bool ok = true;
     for (unsigned i = 0; i < largo; i++) {
-        sprintf(claves[i], "%08d", i);
-        valores[i] = i;
-        ok = abb_guardar(abb, claves[i], &valores[i]);//no guarden todo en orden porque no es representativo
+        sprintf(claves[i], "%i", rand() % tope);
+        if(!abb_pertenece(abb, claves[i])) {
+          valores[cantidad] = i;
+          ok = abb_guardar(abb, claves[i], &valores[cantidad]);
+          cantidad++;
+        }
         if (!ok) break;
     }
 
@@ -382,7 +375,7 @@ static void prueba_abb_iterar_volumen(size_t largo)
     const char *clave;
     size_t *valor;
 
-    for (i = 0; i < largo; i++) {
+    for (i = 0; i < cantidad; i++) {
         if ( abb_iter_in_al_final(iter) ) {
             ok = false;
             break;
@@ -401,11 +394,11 @@ static void prueba_abb_iterar_volumen(size_t largo)
         abb_iter_in_avanzar(iter);
     }
     print_test("Prueba abb iteración en volumen", ok);
-    print_test("Prueba abb iteración en volumen, recorrio todo el largo", i == largo);
+    print_test("Prueba abb iteración en volumen, recorrio todo el largo", i == cantidad);
     print_test("Prueba abb iterador esta al final, es true", abb_iter_in_al_final(iter));
 
     ok = true;
-    for (i = 0; i < largo; i++) {
+    for (i = 0; i < cantidad; i++) {
         if ( valores[i] != largo ) {
             ok = false;
             break;
@@ -493,8 +486,8 @@ void pruebas_abb_alumno()
 
     prueba_iterador_interno();
 
-    prueba_abb_volumen(200, true);//100 es volumen muy chico
+    prueba_abb_volumen(1000, true);//100 es volumen muy chico
     prueba_abb_iterar();
-    prueba_abb_iterar_volumen(100);
-    prueba_abb_volumen(100, false);
+    prueba_abb_iterar_volumen(1000);
+    prueba_abb_volumen(1000, false);
 }
