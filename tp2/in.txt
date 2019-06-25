@@ -1,0 +1,3 @@
+hola,como,va
+todo,bien
+2019,si,u,b,a
