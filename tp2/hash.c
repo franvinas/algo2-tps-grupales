@@ -68,7 +68,7 @@ bool setear_nodos(hash_t* hash) {//devuelta no es que se crea, es que se setean 
 }
 
 //Post: Inicializa el hash asignando la funcion destruir que le llega por parametro , la capacidad total y reserva espacio en memoria para los datos
-void crear_tabla_hash(hash_t* hash,hash_destruir_dato_t destruir_dato,size_t capacidad_total){//aca si seria un crear_tabla_hash porque hacen un malloc de la tabla
+void crear_tabla_hash(hash_t* hash, size_t capacidad_total){//aca si seria un crear_tabla_hash porque hacen un malloc de la tabla
     hash->cantidad_borrados = 0;
     hash->cantidad_ocupados = 0;
     hash->capacidad = capacidad_total;
@@ -119,16 +119,8 @@ size_t posicion_clave(const char* clave , const hash_t* hash){
 
 
 //Post: Libera la clave y dato asociado al nodo. Devuelve el valor del par (clave,valor). Cambia el estado del nodo a BORRADO.
-void* nodo_borrar(hash_t* hash, nodo_hash_t* nodo){
+void nodo_borrar(hash_t* hash, nodo_hash_t* nodo){
     free(nodo->clave);
-
-    void* dato_a_borrar = nodo->dato;
-
-    //borrar comentarios
-
-    nodo->estado = BORRADO;
-
-    return dato_a_borrar;
 }
 
 
@@ -137,7 +129,7 @@ bool redimensionar_hash(hash_t* hash, size_t nueva_capacidad){
 
     size_t capacidad_actual = hash->capacidad;
     nodo_hash_t* datos_actual = hash->datos;
-    crear_tabla_hash(hash,hash->destruir_dato,nueva_capacidad);
+    crear_tabla_hash(hash, nueva_capacidad);
 
     if (nueva_capacidad > 0 && !hash->datos) {
         return false;
@@ -184,7 +176,7 @@ hash_t *hash_crear(void){
         return NULL;
     }
 
-    crear_tabla_hash(hash,destruir_dato,CONSTANTE_CAPACIDAD_INICIAL);
+    crear_tabla_hash(hash, CONSTANTE_CAPACIDAD_INICIAL);
 
     if (hash->datos == NULL){
         free(hash);
@@ -234,17 +226,17 @@ bool hash_guardar(hash_t *hash, const char *clave){
  * Post: El elemento fue borrado de la estructura y se lo devolvió,
  * en el caso de que estuviera guardado.
  */
-void *hash_borrar(hash_t *hash, const char *clave){//no redimensionan hacia abajo
+void hash_borrar(hash_t *hash, const char *clave){//no redimensionan hacia abajo
     size_t  pos = posicion_clave(clave,hash);
 
     if (hash->datos[pos].estado != OCUPADO) {
-        return NULL;
+        return;
     }
 
     hash->cantidad_ocupados--;
     hash->cantidad_borrados++;
 
-    return nodo_borrar(hash,&hash->datos[pos]);
+    nodo_borrar(hash,&hash->datos[pos]);
 }
 
 
@@ -281,44 +273,44 @@ void hash_destruir(hash_t *hash){
     free(hash->datos);
     free(hash);
 }
-//
-// /* Iterador del hash */
-//
-// //Post: Crea iterador apuntando a la primer posicion ocupada que encuentre del hash (apunta a capacidad en caso de no encontrar ninguna ocupada)
-// hash_iter_t *hash_iter_crear(const hash_t *hash){
-//
-//     hash_iter_t* hash_iter = malloc(sizeof(hash_iter_t));
-//     if(!hash_iter) return NULL;
-//
-//     size_t posicion = buscar_proxima_posicion_ocupada(hash, 0);
-//
-//     hash_iter->hash = hash;
-//     hash_iter->pos = posicion;
-//     return hash_iter;
-// }
-//
-// //Post: Avanza el iterador a la proxima posicion ocupada que encuentre
-// bool hash_iter_avanzar(hash_iter_t *iter){
-//
-//     if(hash_iter_al_final(iter)) return false;
-//
-//     iter->pos = buscar_proxima_posicion_ocupada(iter->hash, iter->pos+1);
-//
-//     return true;
-// }
-//
-// //Post: Devuelve clave actual, esa clave no se puede modificar ni liberar.
-// const char *hash_iter_ver_actual(const hash_iter_t *iter){
-//     if(hash_iter_al_final(iter)) return NULL;
-//     return iter->hash->datos[iter->pos].clave;
-// }
-//
-// // Comprueba si terminó la iteración
-// bool hash_iter_al_final(const hash_iter_t *iter){
-//     return buscar_proxima_posicion_ocupada(iter->hash, iter->pos) == iter->hash->capacidad;
-// }
-//
-// // Post: Destruye iterador
-// void hash_iter_destruir(hash_iter_t* iter) {
-//     free(iter);
-// }
+
+/* Iterador del hash */
+
+//Post: Crea iterador apuntando a la primer posicion ocupada que encuentre del hash (apunta a capacidad en caso de no encontrar ninguna ocupada)
+hash_iter_t *hash_iter_crear(const hash_t *hash){
+
+    hash_iter_t* hash_iter = malloc(sizeof(hash_iter_t));
+    if(!hash_iter) return NULL;
+
+    size_t posicion = buscar_proxima_posicion_ocupada(hash, 0);
+
+    hash_iter->hash = hash;
+    hash_iter->pos = posicion;
+    return hash_iter;
+}
+
+//Post: Avanza el iterador a la proxima posicion ocupada que encuentre
+bool hash_iter_avanzar(hash_iter_t *iter){
+
+    if(hash_iter_al_final(iter)) return false;
+
+    iter->pos = buscar_proxima_posicion_ocupada(iter->hash, iter->pos+1);
+
+    return true;
+}
+
+//Post: Devuelve clave actual, esa clave no se puede modificar ni liberar.
+const char *hash_iter_ver_actual(const hash_iter_t *iter){
+    if(hash_iter_al_final(iter)) return NULL;
+    return iter->hash->datos[iter->pos].clave;
+}
+
+// Comprueba si terminó la iteración
+bool hash_iter_al_final(const hash_iter_t *iter){
+    return buscar_proxima_posicion_ocupada(iter->hash, iter->pos) == iter->hash->capacidad;
+}
+
+// Post: Destruye iterador
+void hash_iter_destruir(hash_iter_t* iter) {
+    free(iter);
+}
