@@ -6,6 +6,27 @@
 
 #define separador ','
 
+void agregar_tags(matriz, pos, strv) {
+  size_t i = 1; // empieza en 1 porque en la pos 0 esta el usuario
+  size_t j = 1;
+  while(matriz[pos][i]) {
+    if(strv[j] == NULL)
+  }
+}
+
+void procesar_tags(matriz, cantidad_usuarios, strv) {
+  size_t i = 0;
+  while(i < cantidad_usuarios) {
+    if(stcmp(matriz[i][0], strv[0]) == 0) {
+      agregar_tags(matriz, i, strv);
+      return;
+    }
+    i++;
+  }
+  matriz[i] = strv;
+}
+
+
 int main(int argc, char *argv[]) {
 
   if(argc != 2) {
@@ -32,6 +53,7 @@ int main(int argc, char *argv[]) {
   while(!feof(archivo)) {
     linea[leidos -1] = '\0';
     strv = split(linea, separador); // es un arreglo de arreglos que tinenen en la primera posicion al usuario y en las siguientes a los tags
+    // procesar_tags();
     arr_de_lineas[i] = strv;
     i++;
     leidos = getline(&linea, &capacidad, archivo);
@@ -41,6 +63,8 @@ int main(int argc, char *argv[]) {
     }
   }
   arr_de_lineas[i] = NULL;
+
+  printf("%s\n", arr_de_lineas[2][0]);
 
   // char** usuarios = arr_de_lineas[0];
   //
